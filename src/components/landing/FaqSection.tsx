@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, HelpCircle } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { useScrollReveal } from "@/lib/useScrollReveal";
+import { cn } from "@/lib/cn";
 
 const FAQS = [
   {
@@ -27,6 +28,7 @@ const FAQS = [
 
 export function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const { ref, isVisible } = useScrollReveal();
 
   const toggle = (idx: number) => {
     setOpenIndex(openIndex === idx ? null : idx);
@@ -34,62 +36,70 @@ export function FaqSection() {
 
   return (
     <section id="faq" className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6 lg:py-24">
-      {/* Header */}
-      <div className="text-center max-w-xl mx-auto">
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">
-          <HelpCircle className="size-3.5" />
-          Clear Answers
+      <div
+        ref={ref}
+        className={cn("scroll-reveal", isVisible && "visible")}
+      >
+        {/* Header */}
+        <div className="text-center max-w-xl mx-auto">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">
+            <HelpCircle className="size-3.5" />
+            Clear Answers
+          </div>
+          <h2 className="mt-3 text-title text-ink font-extrabold tracking-tight">
+            Frequently Asked Questions
+          </h2>
+          <p className="mt-2 text-sm sm:text-base text-muted">
+            Everything you need to know about the 4-week cohort, assessments, and scholarships.
+          </p>
         </div>
-        <h2 className="mt-3 text-title text-ink font-extrabold tracking-tight">
-          Frequently Asked Questions
-        </h2>
-        <p className="mt-2 text-sm sm:text-base text-muted">
-          Everything you need to know about the 4-week cohort, assessments, and scholarships.
-        </p>
-      </div>
 
-      {/* Accordion List */}
-      <div className="mt-10 space-y-3.5">
-        {FAQS.map((faq, idx) => {
-          const isOpen = openIndex === idx;
-          return (
-            <div
-              key={idx}
-              className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
-                isOpen ? "bg-surface border-brand-400 shadow-card" : "bg-surface/80 border-line hover:border-line-strong"
-              }`}
-            >
-              <button
-                type="button"
-                onClick={() => toggle(idx)}
-                aria-expanded={isOpen}
-                className="w-full flex items-center justify-between gap-4 p-5 text-left font-bold text-ink hover:text-brand-600 transition-colors"
+        {/* Accordion List */}
+        <div className="mt-10 space-y-3.5">
+          {FAQS.map((faq, idx) => {
+            const isOpen = openIndex === idx;
+            return (
+              <div
+                key={idx}
+                className={cn(
+                  "rounded-2xl border transition-all duration-200 overflow-hidden",
+                  isOpen
+                    ? "bg-surface border-brand-400 shadow-card"
+                    : "bg-surface/80 border-line hover:border-line-strong",
+                )}
               >
-                <span className="text-sm sm:text-base">{faq.q}</span>
-                <ChevronDown
-                  className={`size-5 shrink-0 text-muted transition-transform duration-200 ${
-                    isOpen ? "rotate-180 text-brand-600" : ""
-                  }`}
-                />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => toggle(idx)}
+                  aria-expanded={isOpen}
+                  className="w-full flex items-center justify-between gap-4 p-5 text-left font-bold text-ink hover:text-brand-600 transition-colors"
+                >
+                  <span className="text-sm sm:text-base">{faq.q}</span>
+                  <ChevronDown
+                    className={cn(
+                      "size-5 shrink-0 text-muted transition-transform duration-300",
+                      isOpen && "rotate-180 text-brand-600",
+                    )}
+                  />
+                </button>
 
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: "easeInOut" }}
-                  >
+                {/* Smooth expand/collapse via grid-template-rows */}
+                <div
+                  className="grid transition-[grid-template-rows] duration-300 ease-out"
+                  style={{
+                    gridTemplateRows: isOpen ? "1fr" : "0fr",
+                  }}
+                >
+                  <div className="overflow-hidden">
                     <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-ink-soft leading-relaxed border-t border-line/50">
                       {faq.a}
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          );
-        })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

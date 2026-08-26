@@ -2,43 +2,52 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Art3D } from "@/components/art/Art3D";
 import { ButtonLink } from "@/components/ui/Button";
+import { useScrollReveal } from "@/lib/useScrollReveal";
+import { cn } from "@/lib/cn";
 
 export function LandingFooter() {
+  const { ref, isVisible } = useScrollReveal();
+
   return (
     <footer className="border-t border-line bg-surface pt-16 pb-12">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
         {/* Top Callout Box */}
-        <div className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-brand-700 via-brand-800 to-shell p-8 sm:p-12 text-white shadow-raised mb-16 text-center sm:text-left flex flex-col lg:flex-row items-center justify-between gap-8">
-          <div className="max-w-xl">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white backdrop-blur-xs">
-              <Sparkles className="size-3.5 text-amber-300" />
-              Cohort 5 Application Deadline
-            </span>
-            <h2 className="mt-4 text-2xl sm:text-3xl font-black tracking-tight text-balance">
-              Start with one honest assessment.
-            </h2>
-            <p className="mt-3 text-sm sm:text-base text-white/80 leading-relaxed">
-              Eleven minutes, zero financial cost, and you leave with your baseline score, three priority sectors to explore, and your first high-leverage action this week.
-            </p>
-          </div>
+        <div
+          ref={ref}
+          className={cn("scroll-reveal", isVisible && "visible")}
+        >
+          <div className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-brand-700 via-brand-800 to-shell p-8 sm:p-12 text-white shadow-raised mb-16 text-center sm:text-left flex flex-col lg:flex-row items-center justify-between gap-8">
+            <div className="max-w-xl">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white backdrop-blur-xs">
+                <Sparkles className="size-3.5 text-amber-300" />
+                Cohort 5 Application Deadline
+              </span>
+              <h2 className="mt-4 text-2xl sm:text-3xl font-black tracking-tight text-balance">
+                Start with one honest assessment.
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-white/80 leading-relaxed">
+                Eleven minutes, zero financial cost, and you leave with your baseline score, three priority sectors to explore, and your first high-leverage action this week.
+              </p>
+            </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3.5 shrink-0">
-            <ButtonLink
-              to="/apply/assessments/career-clarity"
-              size="lg"
-              className="bg-white text-brand-800 hover:bg-brand-50 shadow-lg font-extrabold"
-            >
-              Take Free Assessment
-              <ArrowRight className="size-4" />
-            </ButtonLink>
-            <ButtonLink
-              to="/apply/interview"
-              size="lg"
-              variant="secondary"
-              className="border-white/30 text-white hover:bg-white/10"
-            >
-              Scholarship Form
-            </ButtonLink>
+            <div className="flex flex-col sm:flex-row items-center gap-3.5 shrink-0">
+              <ButtonLink
+                to="/apply/assessments/career-clarity"
+                size="lg"
+                className="bg-white text-brand-800 hover:bg-brand-50 shadow-lg font-extrabold"
+              >
+                Take Free Assessment
+                <ArrowRight className="size-4" />
+              </ButtonLink>
+              <ButtonLink
+                to="/apply/interview"
+                size="lg"
+                variant="secondary"
+                className="border-white/30 text-white hover:bg-white/10"
+              >
+                Scholarship Form
+              </ButtonLink>
+            </div>
           </div>
         </div>
 

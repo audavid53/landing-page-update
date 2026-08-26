@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Menu, X, Zap } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { Art3D } from "@/components/art/Art3D";
 import { ButtonLink } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
+
+const NAV_LINKS = [
+  { label: "How it works", href: "#problem" },
+  { label: "The Journey", href: "#journey" },
+  { label: "Learn", href: "#learn" },
+  { label: "Community", href: "#community" },
+  { label: "Opportunities", href: "#readiness" },
+];
 
 export function LandingHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,13 +25,25 @@ export function LandingHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Prevent body scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
   return (
     <>
       <header
         className={cn(
           "sticky top-0 z-40 w-full transition-all duration-300",
           isScrolled
-            ? "bg-surface/85 py-3 shadow-card backdrop-blur-md border-b border-line/60"
+            ? "bg-surface/90 py-3 shadow-card backdrop-blur-md border-b border-line/60"
             : "bg-transparent py-4 sm:py-5",
         )}
       >
@@ -47,54 +67,32 @@ export function LandingHeader() {
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav aria-label="Main Landing Navigation" className="hidden md:flex items-center gap-1.5">
-            <a
-              href="#pillars"
-              className="rounded-pill px-3.5 py-1.5 text-sm font-semibold text-muted transition-colors hover:text-ink hover:bg-surface/70"
-            >
-              7 Pillars
-            </a>
-            <a
-              href="#journey"
-              className="rounded-pill px-3.5 py-1.5 text-sm font-semibold text-muted transition-colors hover:text-ink hover:bg-surface/70"
-            >
-              4-Week Journey
-            </a>
-            <a
-              href="#sectors"
-              className="rounded-pill px-3.5 py-1.5 text-sm font-semibold text-muted transition-colors hover:text-ink hover:bg-surface/70"
-            >
-              14 Sectors
-            </a>
-            <a
-              href="#mini-assessment"
-              className="rounded-pill px-3.5 py-1.5 text-sm font-semibold text-brand-600 transition-colors hover:bg-brand-50"
-            >
-              Live Mini-Quiz
-            </a>
-            <a
-              href="#faq"
-              className="rounded-pill px-3.5 py-1.5 text-sm font-semibold text-muted transition-colors hover:text-ink hover:bg-surface/70"
-            >
-              FAQ
-            </a>
+          <nav aria-label="Main Landing Navigation" className="hidden md:flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className="rounded-pill px-3.5 py-1.5 text-sm font-semibold text-muted transition-colors hover:text-ink hover:bg-surface/70"
+              >
+                {link.label}
+              </a>
+            ))}
           </nav>
 
           {/* Action CTAs */}
           <div className="hidden sm:flex items-center gap-3">
             <Link
               to="/apply/assessments"
-              className="rounded-pill px-3.5 py-2 text-sm font-bold text-ink-soft hover:text-ink hover:bg-white/60 transition-colors"
+              className="rounded-pill px-3.5 py-2 text-sm font-bold text-brand-600 hover:text-brand-700 hover:bg-brand-50 transition-colors"
             >
-              Scholarship
+              Take the assessment
             </Link>
             <ButtonLink
-              to="/dashboard"
+              to="/apply/interview"
               size="sm"
               className="group shadow-xs hover:shadow-md transition-all duration-300"
             >
-              <Zap className="size-3.5 text-amber-300 fill-current group-hover:scale-110 transition-transform" />
-              Enter Platform
+              Apply for scholarship
               <ArrowRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
             </ButtonLink>
           </div>
@@ -131,42 +129,17 @@ export function LandingHeader() {
             </button>
           </div>
 
-          <nav className="mt-6 flex flex-col gap-3">
-            <a
-              href="#pillars"
-              onClick={() => setMobileOpen(false)}
-              className="rounded-xl px-4 py-3 text-base font-semibold text-shell-muted hover:bg-shell-raised hover:text-white"
-            >
-              The 7 Pillars
-            </a>
-            <a
-              href="#journey"
-              onClick={() => setMobileOpen(false)}
-              className="rounded-xl px-4 py-3 text-base font-semibold text-shell-muted hover:bg-shell-raised hover:text-white"
-            >
-              4-Week Journey
-            </a>
-            <a
-              href="#sectors"
-              onClick={() => setMobileOpen(false)}
-              className="rounded-xl px-4 py-3 text-base font-semibold text-shell-muted hover:bg-shell-raised hover:text-white"
-            >
-              14 Nigerian Sectors
-            </a>
-            <a
-              href="#mini-assessment"
-              onClick={() => setMobileOpen(false)}
-              className="rounded-xl px-4 py-3 text-base font-semibold text-brand-300 hover:bg-shell-raised"
-            >
-              Try Clarity Mini-Quiz
-            </a>
-            <a
-              href="#faq"
-              onClick={() => setMobileOpen(false)}
-              className="rounded-xl px-4 py-3 text-base font-semibold text-shell-muted hover:bg-shell-raised hover:text-white"
-            >
-              Frequently Asked Questions
-            </a>
+          <nav className="mt-6 flex flex-col gap-2">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="rounded-xl px-4 py-3 text-base font-semibold text-shell-muted hover:bg-shell-raised hover:text-white transition-colors"
+              >
+                {link.label}
+              </a>
+            ))}
           </nav>
 
           <div className="mt-auto space-y-3 pt-6 border-t border-shell-line">
@@ -179,13 +152,13 @@ export function LandingHeader() {
               Take Free Assessment
             </ButtonLink>
             <ButtonLink
-              to="/dashboard"
+              to="/apply/interview"
               size="lg"
               variant="secondary"
               className="w-full justify-center bg-shell-raised text-white border-shell-line"
               onClick={() => setMobileOpen(false)}
             >
-              Enter Dashboard Demo
+              Apply for Scholarship
             </ButtonLink>
           </div>
         </div>
