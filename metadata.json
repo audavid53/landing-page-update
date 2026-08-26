@@ -1,0 +1,6 @@
+{
+  "name": "iPlace",
+  "description": "A career readiness platform for young Nigerians featuring assessments, mentorship, practical projects, learning pillars, and community tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

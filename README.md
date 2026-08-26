@@ -1,11 +1,143 @@
-<div align="center">
+# iPlace
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+A structured career-development journey for young Nigerians: selective admission, assessments,
+interactive learning, mentorship, a cohort at your own level, and access to real opportunities.
 
-  <h1>Built with AI Studio</h2>
+Built to the **iPlace Product Design Blueprint (updated)**. This pass is **UI only** — every screen
+is real, every interaction is presentational, and there is no backend. A static single-page app
+deployed on Vercel; all content is typed mock data and learner progress persists to `localStorage`.
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## Run it
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+```bash
+pnpm install
+pnpm dev        # http://localhost:5173
+pnpm build      # typecheck + production build into dist/
+pnpm preview    # serve the production build
+pnpm lint       # eslint, including jsx-a11y rules
+pnpm typecheck  # tsc --build, strict
+```
 
-</div>
+Node 20+ and pnpm are required.
+
+## Deployment
+
+Vercel builds this as a plain Vite static site. `vercel.json` pins the framework, install and build
+commands, and adds:
+
+- an SPA rewrite so deep links like `/mentorship/ifeoma-balogun` resolve to `index.html`
+- long-lived immutable caching for hashed `/assets/*` bundles
+- baseline security headers
+
+No environment variables and no server runtime are needed.
+
+## Architecture
+
+```
+src/
+  styles/index.css        Design tokens (@theme) + base layer. The single source of visual truth.
+  lib/                    cn() class merge helper
+  data/                   Typed content: pillars, badges, mentors, missions, assessments, community
+  state/                  ProgressProvider — units, completed actions, reward queue (localStorage)
+  components/
+    ui/                   Primitives: Button, Card, Pill, Progress, Tabs, Block, GradientIcon, …
+    art/                  Art3D slot + illustrated SVG badge medals
+    admissions/           AdmissionChecklist (blueprint 4.6)
+    gamification/         MissionCard, ChallengeBanner, RoadmapTrail, ProfileStatusCard, RewardFeedback
+    layout/               AppShell, ApplyShell, Sidebar, BottomNav, nav config
+  pages/                  One file per route, all lazy-loaded
+    apply/                The pre-admission funnel
+scripts/
+  emoji-manifest.mjs      Slug -> upstream 3D asset name
+  fetch-3d-assets.mjs     Fetches public/art/3d/ and generates src/data/art-names.ts
+```
+
+### Design system
+
+Every colour, radius, shadow, type step and easing lives in `src/styles/index.css` as a Tailwind v4
+`@theme` token and is consumed as a utility (`bg-canvas`, `text-ink`, `rounded-card`,
+`shadow-card`). Components do not hard-code hex values — that was the main structural problem with
+the Figma-exported screens this replaces, along with sub-10px type and percentage-based layout
+columns.
+
+Status colours (`success`, `warn`, `danger`, `info`) each clear **5.7:1** contrast against both
+white and their own soft background, so status pills stay legible at pill type sizes.
+
+### Two experience states
+
+Blueprint section 3 defines a pre- and a post-admission product, and they get separate shells:
+
+- `ApplyShell` wraps `/apply/*` — no platform navigation. Showing Home/Learn/Journey to someone who
+  cannot open any of them turns the product into a wall of locks.
+- `AppShell` wraps the platform, with the floating bottom bar and the desktop sidebar.
+
+### Progression model
+
+Section 8 separates two numbers the earlier build conflated:
+
+| | Meaning | Source |
+|---|---|---|
+| **Units** | Academic weight of an activity, on the 2/3/4-unit course-credit scale | Fixed by the curriculum |
+| **XP** | Engagement reward for doing it | Earned per action |
+| **Level** | Journey progression, 1–6, ending in the Treasure Chest | Derived from XP |
+| **Badge** | Milestone recognition, 13 tiers | Derived from XP |
+
+Levels are **per learner**, not per calendar week — section 9 has learners moving at different
+speeds through the same six levels, which the previous week-indexed roadmap could not express.
+
+XP is awarded for concrete actions only, and `ProgressProvider` refuses to award the same action
+twice, so the total always reflects real work. Each award raises a reward card naming **what you
+did**, **what changed**, and **what it was worth** — section 7's "make effort visible" principle.
+
+### 3D illustration set
+
+The art direction calls for rendered 3D artwork on every card. `public/art/3d/` holds 60 PNGs from
+[microsoft/fluentui-emoji](https://github.com/microsoft/fluentui-emoji) (MIT), fetched by
+`pnpm assets:3d` and committed so the build never touches the network.
+
+Components address artwork **by role** — `<Art3D name="guardian" />`, not a file path — so replacing
+the fetched set with a commissioned pack means editing `scripts/emoji-manifest.mjs` and nothing
+else. The `Art3DName` union is generated by the same script, so a component cannot reference a PNG
+that was never fetched.
+
+### Accessibility
+
+- Landmarks, one `<h1>` per route, and a skip link on every page
+- Focus is moved and scroll reset on navigation
+- A single visible `:focus-visible` treatment product-wide
+- Tabs implement the WAI-ARIA pattern (arrow/Home/End keys, roving tabindex); filters that do not
+  swap panels are toggle-button groups instead, not fake tablists
+- Progress bars and rings expose `role="progressbar"` / `<title>` with real values
+- Locked states are conveyed by border and label, never by opacity alone
+- `prefers-reduced-motion` disables animation and smooth scrolling
+- Verified with axe-core (WCAG 2.1 A + AA) across all 20 routes at both 420px and 1280px: **0 violations**
+
+### Performance
+
+Routes are code-split with `React.lazy`, React is isolated in its own long-lived chunk, and the
+initial payload is roughly 71 kB gzipped with each route chunk under 4 kB.
+
+## What is mocked
+
+There is no API, no auth and no video hosting. Mentor sessions use a play-state placeholder rather
+than an embedded player, assessment results are pre-written outcomes rather than a scoring engine,
+and the AI-assisted assessment explains what AI *would* do without calling a model. Swapping the
+`src/data` modules for API calls is the intended next step; the progress state shape is versioned
+so it can move to a server without a migration.
+
+## Open questions this UI assumes an answer to
+
+Blueprint section 20 lists seventeen open questions. Twelve are data or policy and are safely
+stubbed here. Five change what a screen *is*, so each was built on a stated assumption — all are
+cheap to revise, and each is flagged in a comment at the top of the file that implements it:
+
+| Question | Assumed here | If it changes |
+|---|---|---|
+| Scholarship interview format (4.3) | Three async recorded answers, written fallback | Becomes a booking flow; the question list survives |
+| Assessment question formats (4.2) | Single-select option lists | Likert or timed formats need new runner components |
+| Lesson interaction types (7) | Five kinds, modelled as `InteractionKind` | Add a kind; the player switches on it already |
+| Payment (4.5) | Handoff to a processor, card data never in-app | In-app capture would need PCI scope |
+| Pre-admission surface (4.5) | Separate `/apply` routes and shell | Merging into `/dashboard` would reintroduce the wall of locks |
+
+Unit values (2/3/4 per activity) are placeholders pending the curriculum mapping, and Level 6
+eligibility copy is illustrative pending confirmation with partner employers.

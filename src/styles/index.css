@@ -1,0 +1,327 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   iPlace design tokens
+   ----------------------------------------------------------------------------
+   Everything visual is defined once here and consumed as Tailwind utilities
+   (bg-canvas, text-ink, rounded-card, shadow-card, …). Components should never
+   hard-code a hex value — that was the main structural problem with the
+   Figma-exported screens this replaces.
+   ========================================================================== */
+@theme {
+  /* -- Brand ---------------------------------------------------------------- */
+  --color-brand-50: #f2edff;
+  --color-brand-100: #e5dbff;
+  --color-brand-200: #cbb7ff;
+  --color-brand-300: #ab8dfb;
+  --color-brand-400: #8a63f4;
+  --color-brand-500: #5525e8;
+  --color-brand-600: #4a1fd0;
+  --color-brand-700: #3b18a6;
+  --color-brand-800: #2c1279;
+  --color-brand-900: #1d0c50;
+
+  /* -- Neutrals ------------------------------------------------------------- */
+  --color-ink: #17172a;
+  --color-ink-soft: #3b3d55;
+  --color-muted: #62647d;
+  --color-canvas: #eeecfb;
+  --color-surface: #ffffff;
+  /* Panel behind grouped cards — one step warmer than the canvas. */
+  --color-surface-sunk: #f6f5fd;
+  --color-line: #e7e7f0;
+  --color-line-strong: #d4d4e4;
+
+  /* Dark shell (sidebar / nav) */
+  --color-shell: #16161f;
+  --color-shell-raised: #1f1f2c;
+  --color-shell-line: #2c2c3d;
+  --color-shell-muted: #9c9db5;
+
+  /* -- Status ---------------------------------------------------------------
+     Each foreground clears 5.7:1 against both white and its own soft
+     background, so status pills stay legible at pill type sizes. */
+  --color-success: #0a6e3b;
+  --color-success-soft: #e6f7ee;
+  --color-warn: #8a4f00;
+  --color-warn-soft: #fff3dc;
+  --color-danger: #a8244a;
+  --color-danger-soft: #ffe9ef;
+  --color-info: #0b5cb0;
+  --color-info-soft: #e6f1fe;
+
+  /* -- Gamification --------------------------------------------------------- */
+  --color-xp: #f0a202;
+  --color-xp-soft: #fff4dc;
+
+  /* -- Card blocks -----------------------------------------------------------
+     Saturated cards carry white text and their own 3D art. Each block ships a
+     matching -soft tint for the quiet variant of the same card. */
+  --color-block-violet: #4c1fd6;
+  --color-block-violet-soft: #ece5ff;
+  --color-block-navy: #101a3d;
+  --color-block-navy-soft: #e4e7f2;
+  --color-block-green: #1f8f45;
+  --color-block-green-soft: #e3f6e9;
+  --color-block-amber: #ef9d16;
+  --color-block-amber-soft: #fff2da;
+  --color-block-sky: #1273d4;
+  --color-block-sky-soft: #e4f0fe;
+  --color-block-rose: #d63864;
+  --color-block-rose-soft: #ffe7ee;
+
+  /* -- Pillar accents (one per pillar, kept accessible on white) ------------- */
+  --color-pillar-self: #5b3fd0;
+  --color-pillar-finance: #1a8f52;
+  --color-pillar-curiosity: #0f6ed4;
+  --color-pillar-social: #d9480f;
+  --color-pillar-skills: #b06f00;
+  --color-pillar-energy: #d62a56;
+  --color-pillar-resilience: #1e40af;
+
+  /* -- Typography ----------------------------------------------------------- */
+  --font-sans:
+    "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
+
+  --text-display: clamp(2.25rem, 1.4rem + 3.4vw, 3.75rem);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 800;
+
+  --text-title: clamp(1.5rem, 1.15rem + 1.3vw, 2.25rem);
+  --text-title--line-height: 1.15;
+  --text-title--letter-spacing: -0.02em;
+  --text-title--font-weight: 700;
+
+  /* -- Radii -----------------------------------------------------------------
+     The art direction leans hard on roundness: blocks are rounder than cards,
+     and icon tiles are rounded squares rather than circles. */
+  --radius-tile: 0.9rem;
+  --radius-card: 1.5rem;
+  --radius-panel: 1.75rem;
+  --radius-block: 2rem;
+  --radius-pill: 999px;
+
+  /* -- Elevation ------------------------------------------------------------ */
+  --shadow-card: 0 1px 2px rgb(23 23 42 / 0.04), 0 8px 24px -12px rgb(23 23 42 / 0.14);
+  --shadow-raised: 0 2px 4px rgb(23 23 42 / 0.05), 0 18px 40px -18px rgb(23 23 42 / 0.28);
+  --shadow-nav: 0 -2px 12px rgb(23 23 42 / 0.06), 0 12px 32px -16px rgb(23 23 42 / 0.35);
+  /* Saturated blocks cast a tinted shadow, set per-block via --block-shadow. */
+  --shadow-block: 0 18px 40px -20px var(--block-shadow, rgb(23 23 42 / 0.45));
+  /* The floating dark bottom bar. */
+  --shadow-pill: 0 8px 30px -8px rgb(16 26 61 / 0.45);
+  /* Circular white CTA sitting on a saturated block. */
+  --shadow-fab: 0 6px 16px -6px rgb(16 26 61 / 0.4);
+
+  /* -- Motion --------------------------------------------------------------- */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-pop-in: pop-in 0.32s var(--ease-out-soft) both;
+  --animate-rise-in: rise-in 0.42s var(--ease-out-soft) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================================================
+   Base layer
+   ========================================================================== */
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    /* Room for the fixed mobile bottom navigation. */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* One consistent, always-visible focus treatment across the whole product. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Only remove the ring for pointer users who did not tab here. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-100);
+    color: var(--color-brand-900);
+  }
+
+  img,
+  svg,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Respect the OS-level motion preference everywhere, including our own
+     keyframe tokens above. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Skip link — visible only once focused. */
+  .skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    transform: translateY(-200%);
+    transition: transform 0.18s var(--ease-out-soft);
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================================
+   Gradient system
+   ----------------------------------------------------------------------------
+   The art direction calls for bold, filled icons on gradient tiles and
+   saturated cards with a gloss highlight. Both read from the same named ramps,
+   so an icon tile and the card it sits on always agree.
+
+   Applied with `data-ramp="violet"` rather than a class per colour, which keeps
+   the variant a value a component can pass through as a prop.
+   ========================================================================== */
+@layer components {
+  [data-ramp] {
+    /* Fallback ramp — overridden by every named variant below. */
+    --ramp-from: var(--color-brand-400);
+    --ramp-to: var(--color-brand-600);
+    --ramp-ink: #ffffff;
+  }
+
+  [data-ramp="violet"] {
+    --ramp-from: #7b53f6;
+    --ramp-to: #4c1fd6;
+    --block-shadow: rgb(76 31 214 / 0.5);
+  }
+
+  [data-ramp="navy"] {
+    --ramp-from: #2a3a72;
+    --ramp-to: #101a3d;
+    --block-shadow: rgb(16 26 61 / 0.5);
+  }
+
+  [data-ramp="green"] {
+    --ramp-from: #35b765;
+    --ramp-to: #1f8f45;
+    --block-shadow: rgb(31 143 69 / 0.45);
+  }
+
+  [data-ramp="amber"] {
+    --ramp-from: #ffc046;
+    --ramp-to: #ef9d16;
+    --block-shadow: rgb(239 157 22 / 0.45);
+  }
+
+  [data-ramp="sky"] {
+    --ramp-from: #4aa3ef;
+    --ramp-to: #1273d4;
+    --block-shadow: rgb(18 115 212 / 0.45);
+  }
+
+  [data-ramp="rose"] {
+    --ramp-from: #f2698f;
+    --ramp-to: #d63864;
+    --block-shadow: rgb(214 56 100 / 0.45);
+  }
+
+  /* The gradient fill itself. Kept separate from the ramp so a component can
+     take a ramp without being forced to paint with it. */
+  .ramp-fill {
+    background-image: linear-gradient(140deg, var(--ramp-from), var(--ramp-to));
+    color: var(--ramp-ink, #fff);
+  }
+
+  /* Saturated card: gradient ground, tinted shadow, and a soft top-left gloss
+     that mirrors the specular highlight on the 3D artwork. */
+  .ramp-block {
+    position: relative;
+    isolation: isolate;
+    background-image: linear-gradient(140deg, var(--ramp-from), var(--ramp-to));
+    color: #fff;
+    box-shadow: var(--shadow-block);
+  }
+
+  .ramp-block::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      120% 100% at 15% 0%,
+      rgb(255 255 255 / 0.22),
+      transparent 60%
+    );
+  }
+
+  /* Text sitting on a saturated block. White at full strength is too loud for
+     supporting copy, so body text steps down while headings stay pure white. */
+  .ramp-block .on-block-muted {
+    color: rgb(255 255 255 / 0.78);
+  }
+}
