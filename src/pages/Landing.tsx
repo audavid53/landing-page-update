@@ -1,13 +1,12 @@
-import { TopBanner } from "@/components/landing/TopBanner";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { ProblemSection } from "@/components/landing/ProblemSection";
+import { LivePulseTicker } from "@/components/landing/LivePulseTicker";
+import { PillarsSection } from "@/components/landing/PillarsSection";
 import { JourneyTimeline } from "@/components/landing/JourneyTimeline";
-import { InteractiveLearning } from "@/components/landing/InteractiveLearning";
-import { ProgressMetrics } from "@/components/landing/ProgressMetrics";
-import { CommunitySection } from "@/components/landing/CommunitySection";
 import { MentorsShowcase } from "@/components/landing/MentorsShowcase";
-import { ReadinessSection } from "@/components/landing/ReadinessSection";
+import { InteractiveAssessmentPreview } from "@/components/landing/InteractiveAssessmentPreview";
+import { BadgesGamification } from "@/components/landing/BadgesGamification";
+import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FaqSection } from "@/components/landing/FaqSection";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
@@ -22,51 +21,40 @@ export default function Landing() {
         Skip to main content
       </a>
 
-      {/* Top announcement banner */}
-      <TopBanner />
-
       {/* Floating Interactive Header */}
       <LandingHeader />
 
       {/* Main Page Content */}
       <main id="content" tabIndex={-1} className="outline-none">
-        {/* 1. Hero: Value proposition with illustration + CTAs */}
+        {/* 1. Hero Section with Interactive Readiness Simulator */}
         <HeroSection />
 
-        {/* 2. Problem: Emotional hook — "Not knowing is normal" */}
-        <section id="problem">
-          <ProblemSection />
-        </section>
+        {/* 2. Live Cohort Pulse / Activity Feed Ticker */}
+        <LivePulseTicker />
 
-        {/* 3. The Journey: 6-step card grid */}
+        {/* 3. The 7 Pillars of Career Readiness */}
+        <PillarsSection />
+
+        {/* 4. The 4-Week Journey & Milestone Roadmap */}
         <JourneyTimeline />
 
-        {/* 4. Interactive Learning: Workplace scenario demo */}
-        <section id="learn">
-          <InteractiveLearning />
-        </section>
-
-        {/* 5. Progress Metrics: Units/XP/Levels/Badges */}
-        <ProgressMetrics />
-
-        {/* 6. Community: Cohort + weekly challenge */}
-        <section id="community">
-          <CommunitySection />
-        </section>
-
-        {/* 7. Industry Mentors: 14 sector tags + stat */}
+        {/* 5. 14 Nigerian Industry Sectors & Real Working Mentors */}
         <MentorsShowcase />
 
-        {/* 8. Career Readiness: Skill pills + score messaging */}
-        <section id="readiness">
-          <ReadinessSection />
-        </section>
+        {/* 6. Instant 30-Second Clarity Mini-Assessment */}
+        <InteractiveAssessmentPreview />
 
-        {/* 9. FAQ */}
+        {/* 7. Gamification & 13 Badge Progression */}
+        <BadgesGamification />
+
+        {/* 8. Verified Student Testimonials */}
+        <TestimonialsSection />
+
+        {/* 9. Frequently Asked Questions */}
         <FaqSection />
       </main>
 
-      {/* Structured Footer with CTA */}
+      {/* Structured Footer */}
       <LandingFooter />
     </div>
   );
