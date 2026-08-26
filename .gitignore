@@ -11,6 +11,13 @@ out-tsc
 # dependencies
 node_modules
 
+# Vercel
+.vercel
+
+# Environment variables
+.env*.local
+.env
+
 # IDEs and editors
 /.idea
 .project
