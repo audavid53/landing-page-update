@@ -8,7 +8,7 @@ import { useProgress } from "@/state/useProgress";
 import { cn } from "@/lib/cn";
 import { useSession } from "@/state/SessionProvider";
 
-const LEARNER = { name: "Mary Sokoh", role: "Aspiring Product Designer" };
+const LEARNER = { name: "Arere-Uzezi Ogheneyole David", role: "Main Character · Student" };
 
 /**
  * The progression summary that lives at the bottom of the dark sidebar:
@@ -30,18 +30,10 @@ export function ProfileStatusCard({ className }: { className?: string }) {
       )}
     >
       <div className="flex items-center gap-3">
-        <Avatar name={learner.name} size="md" ring online />
+        <Avatar name={learner.name} src="/images/profile_david.jpg" size="md" ring online />
         <div className="min-w-0">
           <p className="truncate text-sm font-bold">{learner.name}</p>
           <p className="truncate text-xs text-shell-muted">{learner.role}</p>
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center gap-3">
-        <BadgeArt from={tier.from} to={tier.to} glyph={tier.glyph} size={40} />
-        <div className="min-w-0">
-          <p className="text-xs text-shell-muted">Level {tier.level}</p>
-          <p className="truncate text-sm font-bold">{tier.name}</p>
         </div>
         <p className="ml-auto text-right">
           <span className="block text-base font-extrabold tabular-nums">
@@ -51,6 +43,14 @@ export function ProfileStatusCard({ className }: { className?: string }) {
             XP
           </span>
         </p>
+      </div>
+
+      <div className="mt-4 flex items-center gap-3">
+        <BadgeArt from={tier.from} to={tier.to} glyph={tier.glyph} size={40} />
+        <div className="min-w-0">
+          <p className="text-xs text-shell-muted">Level {tier.level}</p>
+          <p className="truncate text-sm font-bold">{tier.name}</p>
+        </div>
       </div>
 
       <ProgressBar

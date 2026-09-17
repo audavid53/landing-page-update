@@ -1,0 +1,544 @@
+/* Blue Sky Landing Page Section matching Reference Image 3 */
+.blue-sky-section {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #74bcf7 0%, #9fd5fa 30%, #cbe7fc 65%, #f0f7fe 100%);
+  padding: clamp(60px, 8vw, 100px) 20px clamp(40px, 6vw, 80px);
+  text-align: center;
+}
+
+/* Atmospheric Clouds Background */
+.blue-sky-section::before,
+.blue-sky-section::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(50px);
+  z-index: 1;
+}
+
+.blue-sky-section::before {
+  top: 10%;
+  left: -8%;
+  width: 500px;
+  height: 350px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.blue-sky-section::after {
+  top: 30%;
+  right: -8%;
+  width: 550px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.blue-sky-inner {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 1160px);
+  margin-inline: auto;
+}
+
+/* Header typography */
+.blue-sky-title {
+  margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(34px, 4.5vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: #0f172a;
+  line-height: 1.12;
+}
+
+.blue-sky-subtitle {
+  margin: 18px auto 0;
+  max-width: 580px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(15px, 1.8vw, 18px);
+  font-weight: 500;
+  line-height: 1.5;
+  color: #334155;
+}
+
+/* CTA buttons matching Image 3 */
+.blue-sky-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 28px 0 48px;
+  flex-wrap: wrap;
+}
+
+.blue-sky-btn-scholarship {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 28px;
+  border-radius: 9999px;
+  background: #602de0;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 25px -5px rgba(96, 45, 224, 0.35);
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border: 0;
+}
+
+.blue-sky-btn-scholarship:hover {
+  background: #4e21c7;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -5px rgba(96, 45, 224, 0.45);
+}
+
+.blue-sky-btn-explore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 26px;
+  border-radius: 9999px;
+  background: rgba(186, 226, 252, 0.7);
+  border: 1.5px solid #84caf8;
+  color: #1d4ed8;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  backdrop-filter: blur(4px);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.blue-sky-btn-explore:hover {
+  background: rgba(186, 226, 252, 0.95);
+  transform: translateY(-2px);
+}
+
+/* Mockup Window */
+.blue-sky-mockup {
+  position: relative;
+  background: #ffffff;
+  border-radius: 36px;
+  box-shadow: 0 30px 80px -15px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(226, 232, 240, 0.8);
+  padding: 16px;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .blue-sky-mockup {
+    padding: 24px;
+    border-radius: 40px;
+  }
+}
+
+.blue-sky-app-window {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #f8fafc;
+  min-height: 480px;
+  position: relative;
+  border: 1px solid #e2e8f0;
+}
+
+@media (max-width: 860px) {
+  .blue-sky-app-window {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mockup Sidebar */
+.blue-sky-sidebar {
+  background: #110e24;
+  color: #ffffff;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 860px) {
+  .blue-sky-sidebar {
+    display: none;
+  }
+}
+
+.blue-sky-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+
+.blue-sky-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.blue-sky-brand-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+}
+
+.blue-sky-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.blue-sky-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+  transition: all 0.15s;
+}
+
+.blue-sky-nav-item.is-active {
+  background: #602de0;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(96, 45, 224, 0.4);
+}
+
+.blue-sky-nav-section-title {
+  padding: 12px 14px 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+/* Floating Overlays */
+.blue-sky-floating-badge {
+  position: absolute;
+  top: 80px;
+  left: 150px;
+  z-index: 10;
+  background: #ffffff;
+  padding: 8px 14px;
+  border-radius: 14px;
+  box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(226, 232, 240, 0.8);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: floatBadge 4s ease-in-out infinite;
+}
+
+@media (max-width: 860px) {
+  .blue-sky-floating-badge {
+    top: 14px;
+    left: 14px;
+  }
+}
+
+/* Beliefs Section Responsive Accordion */
+@media (max-width: 768px) {
+  .beliefs-desktop-grid {
+    display: none !important;
+  }
+  .beliefs-mobile-accordion {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .beliefs-desktop-grid {
+    display: grid !important;
+  }
+  .beliefs-mobile-accordion {
+    display: none !important;
+  }
+}
+
+.blue-sky-badge-score {
+  font-size: 18px;
+  font-weight: 900;
+  color: #602de0;
+  letter-spacing: -0.02em;
+}
+
+.blue-sky-badge-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.blue-sky-floating-ai {
+  position: absolute;
+  bottom: 40px;
+  left: 140px;
+  z-index: 10;
+  background: #ffffff;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(226, 232, 240, 0.8);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  animation: floatAi 4.5s ease-in-out infinite 0.5s;
+}
+
+@media (max-width: 860px) {
+  .blue-sky-floating-ai {
+    display: none;
+  }
+}
+
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes floatAi {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Mockup Main Content */
+.blue-sky-main {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .blue-sky-main {
+    padding: 18px 16px;
+  }
+}
+
+.blue-sky-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.blue-sky-search-wrap {
+  position: relative;
+  flex: 1;
+  max-width: 440px;
+}
+
+.blue-sky-search-wrap input {
+  width: 100%;
+  height: 40px;
+  padding: 0 14px 0 38px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 13px;
+  color: #334155;
+}
+
+.blue-sky-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.blue-sky-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 14px 4px 4px;
+  background: #ffffff;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+}
+
+.blue-sky-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: #818cf8;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.blue-sky-user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.blue-sky-user-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.blue-sky-user-level {
+  font-size: 10px;
+  color: #16a34a;
+  font-weight: 600;
+}
+
+/* Greeting & Level */
+.blue-sky-greeting-area {
+  margin-top: 4px;
+}
+
+.blue-sky-greeting-area p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.blue-sky-greeting-area h3 {
+  margin: 4px 0 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+/* Hero Purple Card */
+.blue-sky-card {
+  position: relative;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #591de8 0%, #6d30f3 100%);
+  color: #ffffff;
+  padding: 28px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: center;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .blue-sky-card {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+}
+
+.blue-sky-card-info h4 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.blue-sky-card-info p {
+  margin: 0;
+  font-size: 13px;
+  color: #e0d7fe;
+  max-width: 320px;
+  line-height: 1.45;
+}
+
+.blue-sky-card-progress {
+  margin-top: 18px;
+  width: 100%;
+  max-width: 280px;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.blue-sky-card-progress-fill {
+  width: 50%;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 9999px;
+}
+
+/* Skills Floating Card */
+.blue-sky-skills-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px;
+  color: #0f172a;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+}
+
+.blue-sky-skills-header {
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.blue-sky-skills-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.blue-sky-skill-chip {
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+  text-align: center;
+}
+
+/* Rocket Illustration */
+.blue-sky-card-action {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.blue-sky-rocket-icon {
+  font-size: 40px;
+  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
+}
+
+.blue-sky-arrow-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #602de0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s;
+}
+
+.blue-sky-arrow-btn:hover {
+  transform: scale(1.08);
+}

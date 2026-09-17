@@ -7,8 +7,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Search,
-  Zap,
-  Compass,
 } from "lucide-react";
 import { RewardFeedback } from "@/components/gamification/RewardFeedback";
 import { GradientDefs } from "@/components/ui/GradientIcon";
@@ -33,52 +31,52 @@ function useRouteChangeFocus() {
   }, [pathname]);
 }
 
-/** Header on mobile with Hamburger menu, learner status, and notifications. */
+import { Art3D } from "@/components/art/Art3D";
+import { useAdmission } from "@/state/AdmissionProvider";
+import { AdmissionLockDialog } from "@/components/admission/AdmissionLockDialog";
+
+/** Header on mobile with Hamburger menu, brand logo, and profile. */
 function MobileTopBar({ onOpenMobileMenu }: { onOpenMobileMenu: () => void }) {
-  const { xp } = useProgress();
   const { account } = useSession();
-  const name = account?.name ?? "Mary Sokoh";
-  const tier = tierFor(xp);
+  const name = account?.name ?? "Arere-Uzezi Ogheneyole David";
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-line bg-surface/95 px-4 py-3 backdrop-blur-md lg:hidden">
-      {/* Hamburger menu button */}
-      <button
-        type="button"
-        onClick={onOpenMobileMenu}
-        aria-label="Open navigation menu"
-        className="grid size-10 shrink-0 place-items-center rounded-xl border border-line bg-surface text-ink hover:bg-canvas active:scale-95 transition-all"
-      >
-        <Menu className="size-5 text-ink" strokeWidth={2.2} />
-      </button>
+      <div className="flex items-center gap-2.5">
+        {/* Hamburger menu button */}
+        <button
+          type="button"
+          onClick={onOpenMobileMenu}
+          aria-label="Open navigation menu"
+          className="grid size-10 shrink-0 place-items-center rounded-xl border border-line bg-surface text-ink hover:bg-canvas active:scale-95 transition-all"
+        >
+          <Menu className="size-5 text-ink" strokeWidth={2.2} />
+        </button>
 
-      {/* Center user info */}
+        {/* Brand logo icon taking user to home page */}
+        <Link
+          to="/"
+          aria-label="Return to home page"
+          className="flex items-center gap-2 group"
+          title="Back to Home"
+        >
+          <span
+            data-ramp="violet"
+            className="ramp-fill grid size-8.5 shrink-0 place-items-center rounded-lg shadow-xs transition-transform group-active:scale-95"
+          >
+            <Art3D name="rocket" size="xs" />
+          </span>
+          <span className="font-extrabold text-ink text-base tracking-tight">iCompass</span>
+        </Link>
+      </div>
+
+      {/* User profile avatar */}
       <Link
         to="/profile"
-        aria-label={`Your profile — ${tier.name} badge`}
-        className="flex min-w-0 items-center gap-2.5 rounded-xl py-1"
+        aria-label={`Your profile — ${name}`}
+        className="flex items-center gap-2 rounded-xl py-1 pr-1"
       >
-        <Avatar name={name} size="sm" ring />
-        <div className="min-w-0 text-left">
-          <p className="truncate text-sm font-extrabold tracking-tight text-ink">{name}</p>
-          <p className="inline-flex items-center gap-1 text-xs font-semibold text-muted">
-            <Zap aria-hidden="true" className="size-3 text-xp" fill="currentColor" />
-            Lvl {account ? tier.level : CURRENT_LEVEL} · {xp.toLocaleString("en-NG")} XP
-          </p>
-        </div>
-      </Link>
-
-      {/* Notification button */}
-      <Link
-        to="/community"
-        aria-label="Notifications"
-        className="relative grid size-10 shrink-0 place-items-center rounded-full border border-line bg-surface hover:bg-canvas transition-colors"
-      >
-        <Bell aria-hidden="true" className="size-4.5 text-ink" strokeWidth={2.2} />
-        <span
-          aria-hidden="true"
-          className="absolute top-2 right-2.5 size-2 rounded-full bg-danger ring-2 ring-surface"
-        />
+        <Avatar name={name} src="/images/profile_david.jpg" size="sm" ring />
       </Link>
     </header>
   );
@@ -94,7 +92,7 @@ function DesktopTopBar({
 }) {
   const { xp } = useProgress();
   const { account } = useSession();
-  const name = account?.name ?? "Mary Sokoh";
+  const name = account?.name ?? "Arere-Uzezi Ogheneyole David";
   const tier = tierFor(xp);
 
   return (
@@ -122,7 +120,7 @@ function DesktopTopBar({
           />
           <input
             type="search"
-            placeholder="Search lessons, mentors, opportunities..."
+            placeholder="Search your journey..."
             aria-label="Search iCompass"
             className="h-10 w-full rounded-full border border-line bg-surface py-2 pr-4 pl-9 text-sm text-ink placeholder:text-muted/80 focus:border-brand-500 focus:bg-surface focus:outline-none shadow-2xs transition-colors"
           />
@@ -147,9 +145,9 @@ function DesktopTopBar({
           to="/profile"
           className="flex items-center gap-3 rounded-full border border-line bg-surface py-1.5 pr-4 pl-1.5 shadow-2xs hover:border-line-strong hover:bg-canvas/50 transition-all"
         >
-          <Avatar name={name} size="sm" ring />
+          <Avatar name={name} src="/images/profile_david.jpg" size="sm" ring />
           <div className="text-left">
-            <p className="text-xs font-extrabold text-ink leading-tight">Hi, {name.split(" ")[0]}</p>
+            <p className="text-xs font-extrabold text-ink leading-tight">{name.split(" ")[0]}</p>
             <p className="text-[0.6875rem] font-semibold text-muted flex items-center gap-1">
               <span className="size-1.5 rounded-full bg-success" />
               Level {account ? tier.level : CURRENT_LEVEL} ({tier.name})
@@ -168,6 +166,21 @@ export function AppShell() {
   const { account } = useSession();
   const { hasCompleted } = useProgress();
   const showWelcome = account?.role === "student" && !hasCompleted("assessment:personality") && pathname === "/dashboard";
+
+  const { state: admission } = useAdmission();
+  const isAdmitted = Boolean(
+    admission.guardian &&
+    admission.subscription &&
+    admission.friend?.inviteCopied &&
+    admission.interviewComplete &&
+    admission.profile
+  );
+
+  const isStudentRole = !account || account.role === "student";
+  const isLockedRoute =
+    isStudentRole &&
+    !isAdmitted &&
+    !["/dashboard", "/profile", "/assessments/personality"].includes(pathname);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -189,15 +202,6 @@ export function AppShell() {
       return next;
     });
   };
-
-  if (account?.role === "student" && ["/dashboard", "/profile", "/registration-interview"].includes(pathname)) {
-    return <div className="min-h-dvh bg-[#f8f6fd] text-ink antialiased">
-      <a href="#main" className="skip-link rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white">Skip to main content</a>
-      <header className="border-b border-[#ebe7f3] bg-white/80 px-4 py-3 sm:px-7"><div className="mx-auto flex max-w-[1130px] items-center justify-between gap-4"><Link to="/dashboard" className="inline-flex items-center gap-2.5 text-base font-extrabold tracking-tight text-ink"><span className="grid size-9 place-items-center rounded-xl bg-brand-500 text-white"><Compass className="size-5" /></span>iCompass</Link><Link to={pathname === "/dashboard" ? "/profile" : "/dashboard"} className="rounded-full border border-line bg-white px-4 py-2 text-xs font-bold text-ink-soft hover:border-brand-300">{pathname === "/dashboard" ? "My profile" : "Overview"}</Link></div></header>
-      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[1180px] px-4 py-6 outline-none sm:px-7 sm:py-9"><Suspense fallback={<PageSkeleton />}><Outlet /></Suspense></main>
-      {showWelcome && <StudentWelcome />}
-    </div>;
-  }
 
   return (
     <div className="flex min-h-dvh bg-canvas antialiased">
@@ -256,6 +260,7 @@ export function AppShell() {
       <BottomNav />
       <RewardFeedback />
       {showWelcome && <StudentWelcome />}
+      {isLockedRoute && <AdmissionLockDialog />}
     </div>
   );
 }

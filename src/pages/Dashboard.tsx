@@ -40,7 +40,8 @@ function greeting() {
 export default function Dashboard() {
   const { account } = useSession();
   const { xp, hasCompleted } = useProgress();
-  if (account?.role === "student") return <StudentDashboard />;
+  // Default to the reference-inspired dashboard for students and general visitors
+  if (!account || account.role === "student") return <StudentDashboard />;
   const tier = tierFor(xp);
   const next = nextTierFor(xp);
 

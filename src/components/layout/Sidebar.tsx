@@ -33,7 +33,7 @@ const collapsedLinkClass = ({ isActive }: { isActive: boolean }) =>
 export function Sidebar({ isCollapsed = false, onToggleCollapse }: SidebarProps) {
   const { xp } = useProgress();
   const { account } = useSession();
-  const name = account?.name ?? "Mary Sokoh";
+  const name = account?.name ?? "Arere-Uzezi Ogheneyole David";
   const tier = tierFor(xp);
 
   return (

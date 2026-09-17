@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ChevronRight, Sparkles, X, Zap } from "lucide-react";
 import { Art3D } from "@/components/art/Art3D";
@@ -8,22 +8,27 @@ import { tierFor } from "@/data/badges";
 import { CURRENT_LEVEL } from "@/data/programme";
 import { useProgress } from "@/state/useProgress";
 import { cn } from "@/lib/cn";
+import { useSession } from "@/state/SessionProvider";
 
 type MobileNavDrawerProps = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-const LEARNER = { name: "Mary Sokoh", role: "Aspiring Product Designer" };
-
 export function MobileNavDrawer({ isOpen, onClose }: MobileNavDrawerProps) {
   const { pathname } = useLocation();
   const { xp } = useProgress();
+  const { account } = useSession();
+  const learnerName = account?.name ?? "Arere-Uzezi Ogheneyole David";
   const tier = tierFor(xp);
 
-  // Close drawer on route change
+  // Close drawer ONLY when route path actually changes
+  const prevPath = useRef(pathname);
   useEffect(() => {
-    onClose();
+    if (prevPath.current !== pathname) {
+      prevPath.current = pathname;
+      onClose();
+    }
   }, [pathname, onClose]);
 
   // Lock body scroll when drawer is open
@@ -81,10 +86,10 @@ export function MobileNavDrawer({ isOpen, onClose }: MobileNavDrawerProps) {
         {/* User Card */}
         <div className="mt-4 rounded-2xl border border-shell-line bg-shell-raised p-3.5">
           <div className="flex items-center gap-3">
-            <Avatar name={LEARNER.name} size="md" ring online />
+            <Avatar name={learnerName} src="/images/profile_david.jpg" size="md" ring online />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-white">{LEARNER.name}</p>
-              <p className="truncate text-xs text-shell-muted">{LEARNER.role}</p>
+              <p className="truncate text-sm font-bold text-white">{learnerName}</p>
+              <p className="truncate text-xs text-shell-muted">Cohort 2025 · Applicant</p>
             </div>
             <Link
               to="/profile"

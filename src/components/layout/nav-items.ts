@@ -29,7 +29,7 @@ export type NavItem = {
  * the dashboard rather than taking a permanent slot.
  */
 export const PRIMARY_NAV: NavItem[] = [
-  { to: "/dashboard", label: "Home", icon: Home, ramp: "violet" },
+  { to: "/", label: "Home", icon: Home, ramp: "violet" },
   { to: "/learning", label: "Learn", icon: GraduationCap, ramp: "sky" },
   { to: "/journey", label: "Journey", icon: Route, ramp: "amber" },
   { to: "/community", label: "Community", icon: Users, ramp: "green" },

@@ -19,6 +19,7 @@ export function BottomNav() {
         "fixed inset-x-4 bottom-4 z-40 rounded-pill bg-shell shadow-pill",
         "mb-[env(safe-area-inset-bottom)]",
         "sm:inset-x-auto sm:left-1/2 sm:w-auto sm:-translate-x-1/2",
+        "lg:hidden",
       )}
     >
       <ul className="flex items-stretch justify-between gap-1 p-2">

@@ -1,17 +1,10 @@
 import { lazy } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { ApplyShell } from "@/components/layout/ApplyShell";
-import { useProgress } from "@/state/useProgress";
-import { useSession } from "@/state/SessionProvider";
-import { useAdmission } from "@/state/AdmissionProvider";
-
-// Route-level code splitting: the landing page is the only chunk most first-time
-// visitors download, and each in-app area loads on demand.
 const Landing = lazy(() => import("@/pages/Landing"));
 
 // Pre-admission (blueprint section 4). Kept under /apply so the two experience
-// states in section 3 are visible in the URL, not just in component state.
 const ApplyDashboard = lazy(() => import("@/pages/apply/ApplyDashboard"));
 const Interview = lazy(() => import("@/pages/apply/Interview"));
 const Guardian = lazy(() => import("@/pages/apply/Guardian"));
@@ -35,22 +28,6 @@ const RegistrationInterview = lazy(() => import("@/pages/RegistrationInterview")
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 export function App() {
-  const { account } = useSession();
-  const { hasCompleted } = useProgress();
-  const { pathname } = useLocation();
-  const { state: admission } = useAdmission();
-  const needsPersonality = account?.role === "student" && !hasCompleted("assessment:personality");
-  if (needsPersonality && pathname !== "/dashboard" && pathname !== "/assessments/personality") {
-    return <Navigate to="/dashboard" replace />;
-  }
-  if (account?.role === "student" && !needsPersonality) {
-    const complete = Boolean(admission.guardian && admission.subscription && admission.friend?.inviteCopied && admission.interviewComplete && admission.profile);
-    const interviewReady = Boolean(admission.guardian && admission.subscription && admission.friend?.inviteCopied);
-    const allowed = ["/dashboard", "/profile", "/assessments/personality"];
-    if (!complete && !allowed.includes(pathname) && !(pathname === "/registration-interview" && interviewReady)) {
-      return <Navigate to="/dashboard" replace />;
-    }
-  }
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
