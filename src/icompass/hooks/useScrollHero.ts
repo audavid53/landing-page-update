@@ -34,14 +34,22 @@ export function useScrollHero(videoSource: string, reducedMotion: boolean) {
     const track = trackRef.current;
     const video = videoRef.current;
     if (!track || !video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+
     setReady(false);
     const markReady = () => setReady(true);
-    video.addEventListener("loadeddata", markReady);
-    if (video.readyState >= 2) markReady();
+    const mediaEvents = ["loadedmetadata", "loadeddata", "canplay", "canplaythrough", "seeked", "timeupdate"] as const;
+    mediaEvents.forEach(evt => video.addEventListener(evt, markReady));
+
+    if (video.readyState >= 1) markReady();
+
     const engine = new ScrollEngine({
       track,
       video,
       onFrame: (time, progress) => {
+        markReady();
         const next = progress > VIDEO_SCROLL_FRACTION + 0.012 ? null : sceneAtTime(time);
         if (activeSceneRef.current !== next) {
           activeSceneRef.current = next;
@@ -70,7 +78,7 @@ export function useScrollHero(videoSource: string, reducedMotion: boolean) {
     });
     return () => {
       engine.destroy();
-      video.removeEventListener("loadeddata", markReady);
+      mediaEvents.forEach(evt => video.removeEventListener(evt, markReady));
     };
   }, [videoSource, reducedMotion]);
 

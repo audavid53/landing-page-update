@@ -9,6 +9,7 @@ interface ScrollEngineOptions {
 }
 
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
+const FALLBACK_DURATION = 11.35;
 
 /** Keeps scroll position, video seeking, and scene text on one timeline. */
 export class ScrollEngine {
@@ -17,7 +18,7 @@ export class ScrollEngine {
   private readonly onFrame: ScrollEngineOptions["onFrame"];
   private readonly onProgress: ScrollEngineOptions["onProgress"];
   private readonly onVisualProgress: ScrollEngineOptions["onVisualProgress"];
-  private duration = 0;
+  private duration = FALLBACK_DURATION;
   private target = 0;
   private displayed = 0;
   private pendingSeek: number | null = null;
@@ -29,6 +30,8 @@ export class ScrollEngine {
   private destroyed = false;
   private observer: IntersectionObserver;
   private visible = true;
+  private seekingTimestamp = 0;
+  private primed = false;
 
   constructor({ track, video, onFrame, onProgress, onVisualProgress }: ScrollEngineOptions) {
     this.track = track;
@@ -36,26 +39,73 @@ export class ScrollEngine {
     this.onFrame = onFrame;
     this.onProgress = onProgress;
     this.onVisualProgress = onVisualProgress;
-    this.duration = Number.isFinite(video.duration) ? video.duration : 0;
+    this.video.muted = true;
+    this.video.defaultMuted = true;
+    this.video.playsInline = true;
+
+    this.updateDuration();
     this.target = this.displayed = this.readProgress();
-    this.video.pause();
+
+    if (this.video.readyState === 0) {
+      this.video.load();
+    }
+
     this.observer = new IntersectionObserver(([entry]) => {
       this.visible = entry?.isIntersecting ?? false;
       if (this.visible) this.handleScroll();
     }, { rootMargin: "100% 0px" });
     this.observer.observe(track);
+
     video.addEventListener("loadedmetadata", this.handleMetadata);
+    video.addEventListener("loadeddata", this.handleMetadata);
+    video.addEventListener("durationchange", this.handleMetadata);
+    video.addEventListener("canplay", this.handleMetadata);
     video.addEventListener("seeked", this.handleSeeked);
+
     window.addEventListener("scroll", this.handleScroll, { passive: true });
     window.addEventListener("resize", this.handleResize, { passive: true });
-    window.addEventListener("wheel", this.cancelSnap, { passive: true });
-    window.addEventListener("touchstart", this.cancelSnap, { passive: true });
-    window.addEventListener("pointerdown", this.cancelSnap, { passive: true });
+    window.addEventListener("wheel", this.handleUserInteraction, { passive: true });
+    window.addEventListener("touchstart", this.handleUserInteraction, { passive: true });
+    window.addEventListener("pointerdown", this.handleUserInteraction, { passive: true });
     window.addEventListener("keydown", this.handleKeydown);
+
     this.onProgress(this.target);
     this.onVisualProgress(this.displayed);
     this.requestFrame();
   }
+
+  private updateDuration() {
+    if (Number.isFinite(this.video.duration) && this.video.duration > 0) {
+      this.duration = this.video.duration;
+    }
+  }
+
+  /**
+   * On iOS Safari, media elements require an initial play/pause handshake
+   * on user gesture (touch/scroll) to initialize the hardware decoding pipeline.
+   */
+  private primeVideo = () => {
+    if (this.primed || !this.video) return;
+    this.primed = true;
+    try {
+      const p = this.video.play();
+      if (p !== undefined) {
+        p.then(() => {
+          this.video.pause();
+          this.updateDuration();
+        }).catch(() => {
+          // Autoplay or low-power restriction fallback
+        });
+      }
+    } catch {
+      // Ignore
+    }
+  };
+
+  private handleUserInteraction = () => {
+    this.primeVideo();
+    this.cancelSnap();
+  };
 
   private readProgress() {
     const rect = this.track.getBoundingClientRect();
@@ -64,11 +114,12 @@ export class ScrollEngine {
   }
 
   private handleMetadata = () => {
-    this.duration = Number.isFinite(this.video.duration) ? this.video.duration : 0;
+    this.updateDuration();
     this.requestFrame();
   };
 
   private handleSeeked = () => {
+    this.seekingTimestamp = 0;
     this.onFrame(this.video.currentTime, this.displayed);
     if (this.pendingSeek !== null) {
       const next = this.pendingSeek;
@@ -78,18 +129,28 @@ export class ScrollEngine {
   };
 
   private seek(time: number) {
-    if (!this.duration || this.video.readyState < 1) return;
+    this.updateDuration();
+    if (!this.duration) return;
+
     const next = Math.min(Math.max(time, 0), Math.max(0, this.duration - 0.001));
-    if (this.video.seeking) {
+    const isSeekingStalled = this.seekingTimestamp > 0 && Date.now() - this.seekingTimestamp > 120;
+
+    if (this.video.seeking && !isSeekingStalled) {
       this.pendingSeek = next;
     } else if (Math.abs(this.video.currentTime - next) > 1 / 60) {
-      this.video.currentTime = next;
+      try {
+        this.seekingTimestamp = Date.now();
+        this.video.currentTime = next;
+      } catch {
+        // Fallback for unexpected seek exceptions
+      }
     } else {
       this.onFrame(this.video.currentTime, this.displayed);
     }
   }
 
   private handleScroll = () => {
+    this.primeVideo();
     this.target = this.readProgress();
     this.onProgress(this.target);
     this.onVisualProgress(this.displayed);
@@ -168,12 +229,15 @@ export class ScrollEngine {
     this.destroyed = true;
     this.observer.disconnect();
     this.video.removeEventListener("loadedmetadata", this.handleMetadata);
+    this.video.removeEventListener("loadeddata", this.handleMetadata);
+    this.video.removeEventListener("durationchange", this.handleMetadata);
+    this.video.removeEventListener("canplay", this.handleMetadata);
     this.video.removeEventListener("seeked", this.handleSeeked);
     window.removeEventListener("scroll", this.handleScroll);
     window.removeEventListener("resize", this.handleResize);
-    window.removeEventListener("wheel", this.cancelSnap);
-    window.removeEventListener("touchstart", this.cancelSnap);
-    window.removeEventListener("pointerdown", this.cancelSnap);
+    window.removeEventListener("wheel", this.handleUserInteraction);
+    window.removeEventListener("touchstart", this.handleUserInteraction);
+    window.removeEventListener("pointerdown", this.handleUserInteraction);
     window.removeEventListener("keydown", this.handleKeydown);
     window.clearTimeout(this.idleTimer);
     cancelAnimationFrame(this.snapFrame);

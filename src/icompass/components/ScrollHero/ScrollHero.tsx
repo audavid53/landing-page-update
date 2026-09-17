@@ -35,7 +35,7 @@ function useMediaQuery(query: string) {
 export function ScrollHero() {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-  const videoSource = isMobile ? "/hero-mobile.webm" : "/hero-desktop.webm";
+  const videoSource = isMobile ? "/hero-mobile.mp4" : "/hero-desktop.mp4";
   const poster = isMobile ? "/hero-mobile-poster.jpg" : "/hero-desktop-poster.jpg";
   const finalDesktop = "/hero-desktop-final.jpg";
   const finalMobile = "/hero-mobile-final.jpg";
