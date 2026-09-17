@@ -8,6 +8,7 @@ import {
   PanelLeftOpen,
   Search,
   Zap,
+  Compass,
 } from "lucide-react";
 import { RewardFeedback } from "@/components/gamification/RewardFeedback";
 import { GradientDefs } from "@/components/ui/GradientIcon";
@@ -20,6 +21,8 @@ import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
 import { MobileNavDrawer } from "./MobileNavDrawer";
 import { cn } from "@/lib/cn";
+import { useSession } from "@/state/SessionProvider";
+import { StudentWelcome } from "@/components/onboarding/StudentWelcome";
 
 /** Send focus and scroll to the top of the new page on every navigation. */
 function useRouteChangeFocus() {
@@ -33,6 +36,8 @@ function useRouteChangeFocus() {
 /** Header on mobile with Hamburger menu, learner status, and notifications. */
 function MobileTopBar({ onOpenMobileMenu }: { onOpenMobileMenu: () => void }) {
   const { xp } = useProgress();
+  const { account } = useSession();
+  const name = account?.name ?? "Mary Sokoh";
   const tier = tierFor(xp);
 
   return (
@@ -53,12 +58,12 @@ function MobileTopBar({ onOpenMobileMenu }: { onOpenMobileMenu: () => void }) {
         aria-label={`Your profile — ${tier.name} badge`}
         className="flex min-w-0 items-center gap-2.5 rounded-xl py-1"
       >
-        <Avatar name="Mary Sokoh" size="sm" ring />
+        <Avatar name={name} size="sm" ring />
         <div className="min-w-0 text-left">
-          <p className="truncate text-sm font-extrabold tracking-tight text-ink">Mary Sokoh</p>
+          <p className="truncate text-sm font-extrabold tracking-tight text-ink">{name}</p>
           <p className="inline-flex items-center gap-1 text-xs font-semibold text-muted">
             <Zap aria-hidden="true" className="size-3 text-xp" fill="currentColor" />
-            Lvl {CURRENT_LEVEL} · {xp.toLocaleString("en-NG")} XP
+            Lvl {account ? tier.level : CURRENT_LEVEL} · {xp.toLocaleString("en-NG")} XP
           </p>
         </div>
       </Link>
@@ -88,6 +93,8 @@ function DesktopTopBar({
   onToggleCollapse: () => void;
 }) {
   const { xp } = useProgress();
+  const { account } = useSession();
+  const name = account?.name ?? "Mary Sokoh";
   const tier = tierFor(xp);
 
   return (
@@ -116,7 +123,7 @@ function DesktopTopBar({
           <input
             type="search"
             placeholder="Search lessons, mentors, opportunities..."
-            aria-label="Search iPlace"
+            aria-label="Search iCompass"
             className="h-10 w-full rounded-full border border-line bg-surface py-2 pr-4 pl-9 text-sm text-ink placeholder:text-muted/80 focus:border-brand-500 focus:bg-surface focus:outline-none shadow-2xs transition-colors"
           />
         </div>
@@ -140,12 +147,12 @@ function DesktopTopBar({
           to="/profile"
           className="flex items-center gap-3 rounded-full border border-line bg-surface py-1.5 pr-4 pl-1.5 shadow-2xs hover:border-line-strong hover:bg-canvas/50 transition-all"
         >
-          <Avatar name="Mary Sokoh" size="sm" ring />
+          <Avatar name={name} size="sm" ring />
           <div className="text-left">
-            <p className="text-xs font-extrabold text-ink leading-tight">Hi, Mary</p>
+            <p className="text-xs font-extrabold text-ink leading-tight">Hi, {name.split(" ")[0]}</p>
             <p className="text-[0.6875rem] font-semibold text-muted flex items-center gap-1">
               <span className="size-1.5 rounded-full bg-success" />
-              Level {CURRENT_LEVEL} ({tier.name})
+              Level {account ? tier.level : CURRENT_LEVEL} ({tier.name})
             </p>
           </div>
           <ChevronDown className="size-3.5 text-muted ml-0.5" />
@@ -157,6 +164,10 @@ function DesktopTopBar({
 
 export function AppShell() {
   useRouteChangeFocus();
+  const { pathname } = useLocation();
+  const { account } = useSession();
+  const { hasCompleted } = useProgress();
+  const showWelcome = account?.role === "student" && !hasCompleted("assessment:personality") && pathname === "/dashboard";
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -178,6 +189,15 @@ export function AppShell() {
       return next;
     });
   };
+
+  if (account?.role === "student" && ["/dashboard", "/profile", "/registration-interview"].includes(pathname)) {
+    return <div className="min-h-dvh bg-[#f8f6fd] text-ink antialiased">
+      <a href="#main" className="skip-link rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white">Skip to main content</a>
+      <header className="border-b border-[#ebe7f3] bg-white/80 px-4 py-3 sm:px-7"><div className="mx-auto flex max-w-[1130px] items-center justify-between gap-4"><Link to="/dashboard" className="inline-flex items-center gap-2.5 text-base font-extrabold tracking-tight text-ink"><span className="grid size-9 place-items-center rounded-xl bg-brand-500 text-white"><Compass className="size-5" /></span>iCompass</Link><Link to={pathname === "/dashboard" ? "/profile" : "/dashboard"} className="rounded-full border border-line bg-white px-4 py-2 text-xs font-bold text-ink-soft hover:border-brand-300">{pathname === "/dashboard" ? "My profile" : "Overview"}</Link></div></header>
+      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[1180px] px-4 py-6 outline-none sm:px-7 sm:py-9"><Suspense fallback={<PageSkeleton />}><Outlet /></Suspense></main>
+      {showWelcome && <StudentWelcome />}
+    </div>;
+  }
 
   return (
     <div className="flex min-h-dvh bg-canvas antialiased">
@@ -235,6 +255,7 @@ export function AppShell() {
 
       <BottomNav />
       <RewardFeedback />
+      {showWelcome && <StudentWelcome />}
     </div>
   );
 }

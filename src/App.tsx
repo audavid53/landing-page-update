@@ -1,7 +1,10 @@
 import { lazy } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { ApplyShell } from "@/components/layout/ApplyShell";
+import { useProgress } from "@/state/useProgress";
+import { useSession } from "@/state/SessionProvider";
+import { useAdmission } from "@/state/AdmissionProvider";
 
 // Route-level code splitting: the landing page is the only chunk most first-time
 // visitors download, and each in-app area loads on demand.
@@ -28,9 +31,26 @@ const Stats = lazy(() => import("@/pages/Stats"));
 const Assessments = lazy(() => import("@/pages/Assessments"));
 const AssessmentRunner = lazy(() => import("@/pages/AssessmentRunner"));
 const Profile = lazy(() => import("@/pages/Profile"));
+const RegistrationInterview = lazy(() => import("@/pages/RegistrationInterview"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 export function App() {
+  const { account } = useSession();
+  const { hasCompleted } = useProgress();
+  const { pathname } = useLocation();
+  const { state: admission } = useAdmission();
+  const needsPersonality = account?.role === "student" && !hasCompleted("assessment:personality");
+  if (needsPersonality && pathname !== "/dashboard" && pathname !== "/assessments/personality") {
+    return <Navigate to="/dashboard" replace />;
+  }
+  if (account?.role === "student" && !needsPersonality) {
+    const complete = Boolean(admission.guardian && admission.subscription && admission.friend?.inviteCopied && admission.interviewComplete && admission.profile);
+    const interviewReady = Boolean(admission.guardian && admission.subscription && admission.friend?.inviteCopied);
+    const allowed = ["/dashboard", "/profile", "/assessments/personality"];
+    if (!complete && !allowed.includes(pathname) && !(pathname === "/registration-interview" && interviewReady)) {
+      return <Navigate to="/dashboard" replace />;
+    }
+  }
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
@@ -63,6 +83,7 @@ export function App() {
         <Route path="/assessments" element={<Assessments />} />
         <Route path="/assessments/:assessmentId" element={<AssessmentRunner />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/registration-interview" element={<RegistrationInterview />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>

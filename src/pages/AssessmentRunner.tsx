@@ -9,10 +9,16 @@ import { ProgressBar } from "@/components/ui/Progress";
 import { ASSESSMENT_BY_ID } from "@/data/assessments";
 import { useProgress } from "@/state/useProgress";
 import { cn } from "@/lib/cn";
+import { PersonalityAssessment } from "@/features/personality/PersonalityAssessment";
 
 type Stage = "intro" | "questions" | "result";
 
 export default function AssessmentRunner() {
+  const { assessmentId } = useParams<{ assessmentId: string }>();
+  return assessmentId === "personality" ? <PersonalityAssessment /> : <OtherAssessmentRunner />;
+}
+
+function OtherAssessmentRunner() {
   const { assessmentId } = useParams<{ assessmentId: string }>();
   const assessment = assessmentId ? ASSESSMENT_BY_ID[assessmentId] : undefined;
   const { complete } = useProgress();

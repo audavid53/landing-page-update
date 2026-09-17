@@ -6,6 +6,7 @@ import { ProgressBar } from "@/components/ui/Progress";
 import { nextTierFor, tierFor, tierProgress, xpToNextTier } from "@/data/badges";
 import { useProgress } from "@/state/useProgress";
 import { cn } from "@/lib/cn";
+import { useSession } from "@/state/SessionProvider";
 
 const LEARNER = { name: "Mary Sokoh", role: "Aspiring Product Designer" };
 
@@ -16,6 +17,8 @@ const LEARNER = { name: "Mary Sokoh", role: "Aspiring Product Designer" };
  */
 export function ProfileStatusCard({ className }: { className?: string }) {
   const { xp } = useProgress();
+  const { account } = useSession();
+  const learner = account ? { name: account.name, role: account.role === "student" ? "Student" : account.role === "professional" ? "Young professional" : account.role === "educator" ? "Educator / counselor" : "Guardian" } : LEARNER;
   const tier = tierFor(xp);
   const next = nextTierFor(xp);
 
@@ -27,10 +30,10 @@ export function ProfileStatusCard({ className }: { className?: string }) {
       )}
     >
       <div className="flex items-center gap-3">
-        <Avatar name={LEARNER.name} size="md" ring online />
+        <Avatar name={learner.name} size="md" ring online />
         <div className="min-w-0">
-          <p className="truncate text-sm font-bold">{LEARNER.name}</p>
-          <p className="truncate text-xs text-shell-muted">{LEARNER.role}</p>
+          <p className="truncate text-sm font-bold">{learner.name}</p>
+          <p className="truncate text-xs text-shell-muted">{learner.role}</p>
         </div>
       </div>
 

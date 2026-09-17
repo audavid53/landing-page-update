@@ -16,6 +16,8 @@ import {
   MISSIONS,
 } from "@/data/programme";
 import { useProgress } from "@/state/useProgress";
+import { useSession } from "@/state/SessionProvider";
+import { StudentDashboard } from "@/components/onboarding/StudentDashboard";
 
 const LEARNER_FIRST_NAME = "Mary";
 
@@ -36,7 +38,9 @@ function greeting() {
  * a phone.
  */
 export default function Dashboard() {
+  const { account } = useSession();
   const { xp, hasCompleted } = useProgress();
+  if (account?.role === "student") return <StudentDashboard />;
   const tier = tierFor(xp);
   const next = nextTierFor(xp);
 

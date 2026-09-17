@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { tierFor } from "@/data/badges";
+import { useSession } from "@/state/SessionProvider";
 import {
   ProgressContext,
   SEED_COMPLETED,
@@ -14,17 +15,17 @@ const EMPTY: ProgressState = {
   completed: Object.fromEntries(SEED_COMPLETED.map((key) => [key, 0])),
 };
 
-function readStored(): ProgressState {
-  if (typeof window === "undefined") return EMPTY;
+function readStored(key: string, initial: ProgressState): ProgressState {
+  if (typeof window === "undefined") return initial;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return EMPTY;
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return initial;
     const parsed = JSON.parse(raw) as Partial<ProgressState>;
-    if (typeof parsed.xp !== "number" || typeof parsed.completed !== "object") return EMPTY;
+    if (typeof parsed.xp !== "number" || typeof parsed.completed !== "object") return initial;
     return { xp: parsed.xp, completed: parsed.completed ?? {} };
   } catch {
     // Corrupted or unavailable storage should never break the app.
-    return EMPTY;
+    return initial;
   }
 }
 
@@ -34,16 +35,19 @@ function readStored(): ProgressState {
  * it without a migration.
  */
 export function ProgressProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<ProgressState>(readStored);
+  const { account } = useSession();
+  const storageKey = account ? `${STORAGE_KEY}:${account.email}` : STORAGE_KEY;
+  const initial = useMemo<ProgressState>(() => account ? { xp: 0, completed: {} } : EMPTY, [account]);
+  const [state, setState] = useState<ProgressState>(() => readStored(storageKey, initial));
   const [rewards, setRewards] = useState<Reward[]>([]);
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      window.localStorage.setItem(storageKey, JSON.stringify(state));
     } catch {
       // Private-mode or quota errors are non-fatal; the session still works.
     }
-  }, [state]);
+  }, [state, storageKey]);
 
   const complete = useCallback(
     ({
@@ -91,9 +95,9 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const reset = useCallback(() => {
-    setState(EMPTY);
+    setState(initial);
     setRewards([]);
-  }, []);
+  }, [initial]);
 
   const value = useMemo(
     () => ({ ...state, hasCompleted, complete, reset, rewards, dismissReward }),

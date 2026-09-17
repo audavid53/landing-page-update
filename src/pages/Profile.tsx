@@ -17,6 +17,8 @@ import {
 } from "@/data/badges";
 import { PILLARS, readinessScore } from "@/data/pillars";
 import { useProgress } from "@/state/useProgress";
+import { useSession } from "@/state/SessionProvider";
+import { StudentProfile } from "@/components/onboarding/StudentProfile";
 
 const LEARNER = {
   name: "Mary Sokoh",
@@ -25,6 +27,11 @@ const LEARNER = {
 };
 
 export default function Profile() {
+  const { account } = useSession();
+  return account?.role === "student" ? <StudentProfile /> : <DemoProfile />;
+}
+
+function DemoProfile() {
   const { xp, completed, reset } = useProgress();
   const tier = tierFor(xp);
   const next = nextTierFor(xp);

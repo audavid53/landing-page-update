@@ -5,7 +5,7 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!assets/|art/|favicon.ico|manifest.json|robots.txt|api/).*)",
+      "source": "/((?!assets/|art/|figmaAssets/|partnerLogos/|hero-|favicon.png|favicon.ico|manifest.json|robots.txt|api/).*)",
       "destination": "/index.html"
     }
   ],

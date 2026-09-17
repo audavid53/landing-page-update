@@ -7,6 +7,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { tierFor } from "@/data/badges";
 import { useProgress } from "@/state/useProgress";
 import { cn } from "@/lib/cn";
+import { useSession } from "@/state/SessionProvider";
 
 type SidebarProps = {
   isCollapsed?: boolean;
@@ -31,6 +32,8 @@ const collapsedLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export function Sidebar({ isCollapsed = false, onToggleCollapse }: SidebarProps) {
   const { xp } = useProgress();
+  const { account } = useSession();
+  const name = account?.name ?? "Mary Sokoh";
   const tier = tierFor(xp);
 
   return (
@@ -49,7 +52,7 @@ export function Sidebar({ isCollapsed = false, onToggleCollapse }: SidebarProps)
             "flex items-center gap-2.5 rounded-xl py-1 text-white group",
             isCollapsed && "justify-center",
           )}
-          title="iPlace Home"
+          title="iCompass Home"
         >
           <span
             data-ramp="violet"
@@ -58,7 +61,7 @@ export function Sidebar({ isCollapsed = false, onToggleCollapse }: SidebarProps)
             <Art3D name="rocket" size="xs" />
           </span>
           {!isCollapsed && (
-            <span className="text-base font-extrabold tracking-tight">iPlace</span>
+            <span className="text-base font-extrabold tracking-tight">iCompass</span>
           )}
         </NavLink>
 
@@ -148,11 +151,11 @@ export function Sidebar({ isCollapsed = false, onToggleCollapse }: SidebarProps)
           <NavLink
             to="/profile"
             className="group relative grid size-10 place-items-center rounded-xl bg-shell-raised border border-shell-line transition-transform hover:scale-105"
-            title={`Mary Sokoh · Level 3 · ${tier.name}`}
+            title={`${name} · Level ${account ? tier.level : 3} · ${tier.name}`}
           >
-            <Avatar name="Mary Sokoh" size="sm" ring />
+            <Avatar name={name} size="sm" ring />
             <span className="pointer-events-none absolute left-full ml-2.5 hidden rounded-md bg-ink px-2.5 py-1 text-xs font-semibold whitespace-nowrap text-white shadow-md group-hover:block z-50">
-              Mary Sokoh · Level 3 ({tier.name})
+              {name} · Level {account ? tier.level : 3} ({tier.name})
             </span>
           </NavLink>
         </div>
